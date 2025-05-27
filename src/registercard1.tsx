@@ -33,9 +33,10 @@ function Registercard1() {
     const [pinyinname, setPinyinname] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
     const [formErrors, setFormErrors] = useState<{ [key: string]: boolean }>({})
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false) // 👈 加载状态
+    const [isLoading, setIsLoading] = useState(false) // 
 
     const handleRegister = async () => {
       const newErrors: { [key: string]: boolean } = {
@@ -43,6 +44,7 @@ function Registercard1() {
         pinyinname: !pinyinname.trim(),
         email: !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
         password: password.length < 8,
+        confirmPassword: password !== confirmPassword,
       };
 
       setFormErrors(newErrors);
@@ -63,21 +65,28 @@ function Registercard1() {
         email,
         password,
       });
-        const {error: userError} = await supabase
-            .from('users')  // 使用小写表名
-            .insert({ 
-                user_id: data.user.id,  // 使用正确的字段名
-                role: role,
-                chinesename: chinesename,
-                pinyinname: pinyinname
-            })
+
       setIsLoading(false);
 
       if (error) {
         toast.error("注册失败: " + error.message);
       } else {
-        toast.success("注册成功");
-          navigate("/login")
+          const { error: userError } = await supabase
+              .from('users')  // 
+              .insert({
+                  user_id: data.user.id,  //
+                  role: role,
+                  chinese_name: chinesename,
+                  pinyin_name: pinyinname
+              })
+
+          if (userError) {
+              toast.error("用户信息存储失败: " + userError.message);
+              // Consider if you need to handle the auth user if profile insert fails
+          } else {
+              toast.success("注册成功");
+              navigate("/login");
+          }
       }
     };
 
@@ -163,14 +172,29 @@ function Registercard1() {
             <Label htmlFor="password">密码</Label>
             <Input
                 id={"password"}
-                value={password}
                 type={"password"}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••••••"
+                value={password}
+                placeholder="密码"
                 className={formErrors.password ? "border-red-500 bg-red-50" : ""}
+                onChange={(e) => setPassword(e.target.value)}
             />
             {formErrors.password && (
               <p className="text-sm text-red-500">密码需不少于8位</p>
+            )}
+        </div>
+
+        <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="confirmPassword">确认密码</Label>
+            <Input
+                id={"confirmPassword"}
+                type={"password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="再次输入密码"
+                className={formErrors.confirmPassword ? "border-red-500 bg-red-50" : ""}
+            />
+            {formErrors.confirmPassword && (
+                <p className="text-sm text-red-500">两次密码输入不一致</p>
             )}
         </div>
         <CardFooter className="flex justify-between mt-4 px-0">

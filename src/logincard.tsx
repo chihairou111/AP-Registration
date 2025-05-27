@@ -2,16 +2,21 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import supabase from "@/lib/supabase"
 import { toast } from "sonner"
+import { Eye, EyeOff } from 'lucide-react';
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator";
 
 import "./logincard.css"
-import yunguIcon from "@/assets/yungu-icon.png";
+import yunguIcon from "@/assets/yungu_icon.png";
+import googleIcon from "@/assets/google_icon.svg";
+import appleIcon from "@/assets/Apple_logo_black.svg"
 
 function Logincard() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [showPassword, setShowPassword] = useState(false);
     const [formErrors, setFormErrors] = useState<{ [key: string]: boolean }>({})
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate();
@@ -67,13 +72,21 @@ function Logincard() {
                 </div>
             )}
 
-            <Input 
-                type={"password"}
-                value={password}
-                placeholder={"密码"}
-                className={`mt-4 mb-1 ${formErrors.password ? "border-red-500 bg-red-50" : ""}`}
-                onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="relative w-full mt-4 mb-1">
+                <Input 
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    placeholder={"密码"}
+                    className={`pr-10 ${formErrors.password ? "border-red-500 bg-red-50" : ""}`}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+                <div 
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                >
+                    {showPassword ? <Eye className="h-5 w-5 text-gray-500" /> : <EyeOff className="h-5 w-5 text-gray-500" />}
+                </div>
+            </div>
             {formErrors.password && (
                 <div className={"self-start"}>
                 <p className="text-sm text-red-500">密码需不少于6位</p>
@@ -96,10 +109,30 @@ function Logincard() {
                 </Button>
                 <Button 
                     variant={"outline"} 
-                    className={"w-[155px] mt-8 mb-2"}  
+                    className={"w-[155px] mt-8 mb-2 border-gray-200"}
                     onClick={() => navigate("/register")}
                 >
                     注册
+                </Button>
+            </div>
+
+            <Separator className={"my-2"}/>
+
+            <div className={"flex flex-col justify-center items-center mt-1"}>
+<p className={"text-sm text-gray-500 font-normal mb-2"}>或使用其它方式登录</p>
+                <Button
+                    variant={"outline"}
+                    className={"w-[330px] border-gray-200 mb-2"}
+                >
+                    <img src={googleIcon} alt={"Google Icon"} className={"w-4 h-4 mr-2"}/>
+                    使用 Google 登录
+                </Button>
+                <Button
+                    variant={"outline"}
+                    className={"w-[330px] border-gray-200 mb-2"}
+                >
+                    <img src={appleIcon} alt={"Google Icon"} className={"w-4 h-5 mr-2"}/>
+                    使用 Apple 登录
                 </Button>
             </div>
         </div>
