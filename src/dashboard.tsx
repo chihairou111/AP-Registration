@@ -153,7 +153,7 @@ function Dashboard() {
                             ]);
                             console.log("已设置默认测试数据");
                         }
-                    }
+                        <p className="text-xs text-gray-500 self-start mt-2 mb-3">{description}</p>      }
                 } catch (error) {
                     console.error("查询AP考试数据错误:", error);
                     toast.error("查询AP考试数据时发生错误");
